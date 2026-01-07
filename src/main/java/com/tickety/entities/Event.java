@@ -1,0 +1,93 @@
+package com.tickety.entities;
+
+import com.tickety.enums.EventStatus;
+import jakarta.persistence.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "events")
+public class Event {
+    @Id
+    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "start")
+    private Instant start;
+
+    @Column(name = "end")
+    private Instant end;
+
+    @Column(name = "venue", nullable = false)
+    private String venue;
+
+    @Column(name = "sales_start")
+    private Instant salesStart;
+
+    @Column(name = "sales_end")
+    private Instant salesEnd;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_id")
+    private User organizer;
+
+    @Builder.Default
+    @ManyToMany(mappedBy = "attendingEvents")
+    private List<User> attendees = new ArrayList<>();
+
+    @Builder.Default
+    @ManyToMany(mappedBy = "staffingEvents")
+    private List<User> staff = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<TicketType> ticketTypes = new ArrayList<>();
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(id, event.id)
+                && Objects.equals(name, event.name)
+                && Objects.equals(start, event.start)
+                && Objects.equals(end, event.end)
+                && Objects.equals(venue, event.venue)
+                && Objects.equals(salesStart, event.salesStart)
+                && Objects.equals(salesEnd, event.salesEnd)
+                && status == event.status
+                && Objects.equals(createdAt, event.createdAt)
+                && Objects.equals(updatedAt, event.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, start, end, venue, salesStart, salesEnd, status, createdAt, updatedAt);
+    }
+}
