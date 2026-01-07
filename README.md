@@ -1,2 +1,2 @@
 # tickety
-a event ticket Platform using spring boot 4
+a event ticket platform using spring boot 4
