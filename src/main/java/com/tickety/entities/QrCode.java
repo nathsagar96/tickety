@@ -2,13 +2,8 @@ package com.tickety.entities;
 
 import com.tickety.enums.QrCodeStatus;
 import jakarta.persistence.*;
-import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -17,11 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "qr_codes")
-public class QrCode {
-    @Id
-    @Column(name = "id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class QrCode extends BaseEntity {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -33,14 +24,6 @@ public class QrCode {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private Instant createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @Override
     public boolean equals(Object o) {

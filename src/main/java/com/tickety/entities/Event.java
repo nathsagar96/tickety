@@ -6,10 +6,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -18,11 +15,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "events")
-public class Event {
-    @Id
-    @Column(name = "id", updatable = false, nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Event extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -61,14 +54,6 @@ public class Event {
     @Builder.Default
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<TicketType> ticketTypes = new ArrayList<>();
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private Instant createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @Override
     public boolean equals(Object o) {

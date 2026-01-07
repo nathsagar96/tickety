@@ -1,14 +1,10 @@
 package com.tickety.entities;
 
 import jakarta.persistence.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -17,11 +13,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
-
-    @Id
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+public class User extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -48,14 +40,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> staffingEvents = new ArrayList<>();
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private Instant updatedAt;
 
     @Override
     public boolean equals(Object o) {

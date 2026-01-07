@@ -1,15 +1,10 @@
 package com.tickety.entities;
 
 import jakarta.persistence.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -18,11 +13,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "ticket_types")
-public class TicketType {
-    @Id
-    @Column(name = "id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class TicketType extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -40,14 +31,6 @@ public class TicketType {
     @Builder.Default
     @OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL)
     private List<Ticket> tickets = new ArrayList<>();
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private Instant createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @Override
     public boolean equals(Object o) {
