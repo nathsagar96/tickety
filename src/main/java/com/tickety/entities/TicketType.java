@@ -18,6 +18,9 @@ public class TicketType extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "price", nullable = false)
     private Double price;
 
@@ -38,6 +41,7 @@ public class TicketType extends BaseEntity {
         TicketType that = (TicketType) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
+                && Objects.equals(description, that.description)
                 && Objects.equals(price, that.price)
                 && Objects.equals(totalAvailable, that.totalAvailable)
                 && Objects.equals(createdAt, that.createdAt)
@@ -46,6 +50,6 @@ public class TicketType extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price, totalAvailable, createdAt, updatedAt);
+        return Objects.hash(id, name, description, price, totalAvailable, createdAt, updatedAt);
     }
 }

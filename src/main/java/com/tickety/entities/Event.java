@@ -20,10 +20,10 @@ public class Event extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "start")
+    @Column(name = "event_start")
     private Instant start;
 
-    @Column(name = "end")
+    @Column(name = "event_end")
     private Instant end;
 
     @Column(name = "venue", nullable = false)
