@@ -24,14 +24,14 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(value = UserNotFoundException.class)
-    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex) {
+    @ExceptionHandler(value = EntityNotFoundException.class)
+    public ProblemDetail handleEntityNotFoundException(EntityNotFoundException ex) {
         log.error("UserNotFoundException: {}", ex.getMessage());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
 
-        problemDetail.setTitle("User Not Found");
-        problemDetail.setType(URI.create("https://api.tickety.com/errors/user-not-found"));
+        problemDetail.setTitle("Not Found");
+        problemDetail.setType(URI.create("https://api.tickety.com/errors/not-found"));
 
         return problemDetail;
     }

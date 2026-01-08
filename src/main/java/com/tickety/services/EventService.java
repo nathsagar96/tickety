@@ -8,11 +8,12 @@ import com.tickety.entities.Event;
 import com.tickety.entities.TicketType;
 import com.tickety.entities.User;
 import com.tickety.exceptions.BusinessException;
-import com.tickety.exceptions.UserNotFoundException;
+import com.tickety.exceptions.EntityNotFoundException;
 import com.tickety.mappers.EventMapper;
 import com.tickety.repositories.EventRepository;
 import com.tickety.repositories.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class EventService {
     public EventResponse createEvent(UUID organizerId, CreateEventRequest request) {
         User organizer = userRepository
                 .findById(organizerId)
-                .orElseThrow(() -> new UserNotFoundException("Organizer with ID " + organizerId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Organizer not found"));
 
         validateEventDates(request);
 
@@ -77,9 +78,9 @@ public class EventService {
         event.setTicketTypes(ticketTypes);
     }
 
-    public PageResponse<EventResponse> getAllEventsForUser(UUID userId, int page, int size) {
+    public PageResponse<EventResponse> getAllEventsForOrganizer(UUID organizerId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Event> eventsPage = eventRepository.findByOrganizerId(userId, pageable);
+        Page<Event> eventsPage = eventRepository.findByOrganizerId(organizerId, pageable);
 
         List<EventResponse> eventResponses = eventMapper.toEventResponseList(eventsPage.getContent());
 
@@ -91,5 +92,13 @@ public class EventService {
                 eventsPage.getTotalPages(),
                 eventsPage.isFirst(),
                 eventsPage.isLast());
+    }
+
+    public EventResponse getEventForOrganizer(UUID eventId, UUID organizerId) {
+        Optional<Event> eventOptional = eventRepository.findByIdAndOrganizerId(eventId, organizerId);
+
+        Event event = eventOptional.orElseThrow(() -> new EntityNotFoundException("Event not found for organizer"));
+
+        return eventMapper.toEventResponse(event);
     }
 }

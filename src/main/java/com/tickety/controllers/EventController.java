@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,19 +29,29 @@ public class EventController {
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest createEventRequest) {
 
-        UUID userId = securityUtils.getCurrentUserId();
+        UUID organizerId = securityUtils.getCurrentUserId();
 
-        return new ResponseEntity<>(eventService.createEvent(userId, createEventRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(eventService.createEvent(organizerId, createEventRequest), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<PageResponse<EventResponse>> getAllEvents(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
-        UUID userId = securityUtils.getCurrentUserId();
+        UUID organizerId = securityUtils.getCurrentUserId();
 
-        PageResponse<EventResponse> events = eventService.getAllEventsForUser(userId, page, size);
+        PageResponse<EventResponse> events = eventService.getAllEventsForOrganizer(organizerId, page, size);
 
         return new ResponseEntity<>(events, HttpStatus.OK);
+    }
+
+    @GetMapping("/{eventId}")
+    public ResponseEntity<EventResponse> getEvent(@PathVariable UUID eventId) {
+
+        UUID organizerId = securityUtils.getCurrentUserId();
+
+        EventResponse event = eventService.getEventForOrganizer(eventId, organizerId);
+
+        return new ResponseEntity<>(event, HttpStatus.OK);
     }
 }
