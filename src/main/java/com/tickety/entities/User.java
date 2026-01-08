@@ -8,7 +8,6 @@ import lombok.*;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -21,11 +20,9 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Builder.Default
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<Event> organizedEvents = new ArrayList<>();
 
-    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "user_attending_events",
@@ -33,7 +30,6 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> attendingEvents = new ArrayList<>();
 
-    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "user_staffing_events",

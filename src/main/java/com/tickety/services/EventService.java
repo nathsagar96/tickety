@@ -3,6 +3,7 @@ package com.tickety.services;
 import com.tickety.dtos.requests.CreateEventRequest;
 import com.tickety.dtos.requests.CreateTicketTypeRequest;
 import com.tickety.dtos.responses.EventResponse;
+import com.tickety.dtos.responses.PageResponse;
 import com.tickety.entities.Event;
 import com.tickety.entities.TicketType;
 import com.tickety.entities.User;
@@ -14,6 +15,9 @@ import com.tickety.repositories.UserRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,5 +75,21 @@ public class EventService {
                 .toList();
 
         event.setTicketTypes(ticketTypes);
+    }
+
+    public PageResponse<EventResponse> getAllEventsForUser(UUID userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Event> eventsPage = eventRepository.findByOrganizerId(userId, pageable);
+
+        List<EventResponse> eventResponses = eventMapper.toEventResponseList(eventsPage.getContent());
+
+        return new PageResponse<>(
+                eventResponses,
+                eventsPage.getNumber(),
+                eventsPage.getSize(),
+                eventsPage.getTotalElements(),
+                eventsPage.getTotalPages(),
+                eventsPage.isFirst(),
+                eventsPage.isLast());
     }
 }
