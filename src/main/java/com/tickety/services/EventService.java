@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EventService {
 
@@ -34,6 +34,7 @@ public class EventService {
     private final EventMapper eventMapper;
     private final TicketTypeMapper ticketTypeMapper;
 
+    @Transactional
     public EventResponse createEvent(UUID organizerId, CreateEventRequest request) {
         User organizer = userRepository
                 .findById(organizerId)
@@ -105,6 +106,7 @@ public class EventService {
         return eventMapper.toEventResponse(event);
     }
 
+    @Transactional
     public EventResponse updateEventForOrganizer(UUID eventId, UUID organizerId, UpdateEventRequest request) {
         if (request.id() == null) {
             throw new ValidationException("Request must contain an ID");
@@ -207,5 +209,14 @@ public class EventService {
         } else if (request.salesStart() != null || request.salesEnd() != null) {
             throw new ValidationException("Both sales start and sales end dates must be provided together");
         }
+    }
+
+    @Transactional
+    public void deleteEventForOrganizer(UUID eventId, UUID organizerId) {
+        Event event = eventRepository
+                .findByIdAndOrganizerId(eventId, organizerId)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found for organizer"));
+
+        eventRepository.delete(event);
     }
 }

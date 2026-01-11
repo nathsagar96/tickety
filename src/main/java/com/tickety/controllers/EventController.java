@@ -61,4 +61,13 @@ public class EventController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable UUID eventId) {
+        UUID organizerId = securityUtils.getCurrentUserId();
+
+        eventService.deleteEventForOrganizer(eventId, organizerId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
