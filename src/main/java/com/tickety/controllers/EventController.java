@@ -1,6 +1,7 @@
 package com.tickety.controllers;
 
 import com.tickety.dtos.requests.CreateEventRequest;
+import com.tickety.dtos.requests.UpdateEventRequest;
 import com.tickety.dtos.responses.EventResponse;
 import com.tickety.dtos.responses.PageResponse;
 import com.tickety.services.EventService;
@@ -10,13 +11,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +26,9 @@ public class EventController {
 
         UUID organizerId = securityUtils.getCurrentUserId();
 
-        return new ResponseEntity<>(eventService.createEvent(organizerId, createEventRequest), HttpStatus.CREATED);
+        EventResponse response = eventService.createEvent(organizerId, createEventRequest);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -40,9 +37,9 @@ public class EventController {
 
         UUID organizerId = securityUtils.getCurrentUserId();
 
-        PageResponse<EventResponse> events = eventService.getAllEventsForOrganizer(organizerId, page, size);
+        PageResponse<EventResponse> pageResponse = eventService.getAllEventsForOrganizer(organizerId, page, size);
 
-        return new ResponseEntity<>(events, HttpStatus.OK);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{eventId}")
@@ -50,8 +47,18 @@ public class EventController {
 
         UUID organizerId = securityUtils.getCurrentUserId();
 
-        EventResponse event = eventService.getEventForOrganizer(eventId, organizerId);
+        EventResponse response = eventService.getEventForOrganizer(eventId, organizerId);
 
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/{eventId}")
+    public ResponseEntity<EventResponse> updateEvent(
+            @PathVariable UUID eventId, @Valid @RequestBody UpdateEventRequest updateEventRequest) {
+        UUID organizerId = securityUtils.getCurrentUserId();
+
+        EventResponse response = eventService.updateEventForOrganizer(eventId, organizerId, updateEventRequest);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
