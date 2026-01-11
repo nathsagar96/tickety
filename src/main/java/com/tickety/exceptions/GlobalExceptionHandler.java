@@ -36,6 +36,18 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(value = ValidationException.class)
+    public ProblemDetail handleValidationException(ValidationException ex) {
+        log.error("Validation exception: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setType(URI.create("https://api.tickety.com/errors/bad-request"));
+
+        return problemDetail;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGlobalException(Exception ex) {
         log.error("Unexpected error occurred", ex);

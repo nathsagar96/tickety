@@ -52,7 +52,7 @@ public class Event extends BaseEntity {
     private List<User> staff = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketType> ticketTypes = new ArrayList<>();
 
     @Override
