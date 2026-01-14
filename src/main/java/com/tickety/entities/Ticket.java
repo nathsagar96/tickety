@@ -2,51 +2,70 @@ package com.tickety.entities;
 
 import com.tickety.enums.TicketStatus;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
+@Entity
+@Table(
+        name = "tickets",
+        indexes = {
+            @Index(name = "idx_ticket_purchaser", columnList = "purchaser_id"),
+            @Index(name = "idx_ticket_type", columnList = "ticket_type_id"),
+            @Index(name = "idx_ticket_status", columnList = "status")
+        })
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "tickets")
+@Builder
 public class Ticket extends BaseEntity {
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TicketStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_type_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private TicketStatus status = TicketStatus.PURCHASED;
+
+    @Column(name = "purchase_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal purchasePrice;
+
+    @Column(name = "purchased_at", nullable = false)
+    private LocalDateTime purchasedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ticket_type_id", nullable = false)
     private TicketType ticketType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "purchaser_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "purchaser_id", nullable = false)
     private User purchaser;
 
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
-    private List<TicketValidation> validations = new ArrayList<>();
+    private Set<TicketValidation> validations = new HashSet<>();
 
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
-    private List<QrCode> qrCodes = new ArrayList<>();
+    private Set<QrCode> qrCodes = new HashSet<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Ticket ticket = (Ticket) o;
-        return Objects.equals(id, ticket.id)
-                && status == ticket.status
-                && Objects.equals(createdAt, ticket.createdAt)
-                && Objects.equals(updatedAt, ticket.updatedAt);
+    @PrePersist
+    public void prePersist() {
+        if (purchasedAt == null) {
+            purchasedAt = LocalDateTime.now();
+        }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, status, createdAt, updatedAt);
+    public boolean isUsed() {
+        return status == TicketStatus.USED;
+    }
+
+    public boolean isCancelled() {
+        return status == TicketStatus.CANCELLED;
+    }
+
+    public boolean isValid() {
+        return status == TicketStatus.PURCHASED && !isUsed() && !isCancelled();
     }
 }

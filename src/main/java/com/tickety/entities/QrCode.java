@@ -2,42 +2,35 @@ package com.tickety.entities;
 
 import com.tickety.enums.QrCodeStatus;
 import jakarta.persistence.*;
-import java.util.Objects;
 import lombok.*;
 
+@Entity
+@Table(
+        name = "qr_codes",
+        indexes = {
+            @Index(name = "idx_qr_code_value", columnList = "value", unique = true),
+            @Index(name = "idx_qr_code_ticket", columnList = "ticket_id")
+        })
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "qr_codes")
+@Builder
 public class QrCode extends BaseEntity {
 
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private QrCodeStatus status;
-
-    @Column(name = "value", nullable = false)
+    @Column(name = "value", nullable = false, unique = true)
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private QrCodeStatus status = QrCodeStatus.ACTIVE;
+
+    @Lob
+    @Column(name = "image_data", columnDefinition = "BYTEA")
+    private byte[] imageData;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        QrCode qrCode = (QrCode) o;
-        return Objects.equals(id, qrCode.id)
-                && status == qrCode.status
-                && Objects.equals(value, qrCode.value)
-                && Objects.equals(createdAt, qrCode.createdAt)
-                && Objects.equals(updatedAt, qrCode.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, status, value, createdAt, updatedAt);
-    }
 }

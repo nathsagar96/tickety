@@ -1,6 +1,6 @@
 package com.tickety.enums;
 
-public enum TicketValidationMethod {
+public enum ValidationMethod {
     QR_SCAN,
     MANUAL
 }

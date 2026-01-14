@@ -1,55 +1,46 @@
 package com.tickety.entities;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import lombok.*;
 
+@Entity
+@Table(
+        name = "users",
+        indexes = {@Index(name = "idx_user_email", columnList = "email")})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "users")
+@Builder
 public class User extends BaseEntity {
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "keycloak_id", nullable = false, unique = true)
+    private UUID keycloakId;
+
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
-    private List<Event> organizedEvents = new ArrayList<>();
+    @Column(name = "first_name")
+    private String firstName;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_attending_events",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
-    private List<Event> attendingEvents = new ArrayList<>();
+    @Column(name = "last_name")
+    private String lastName;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_staffing_events",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
-    private List<Event> staffingEvents = new ArrayList<>();
+    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Event> organizedEvents = new HashSet<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id)
-                && Objects.equals(name, user.name)
-                && Objects.equals(email, user.email)
-                && Objects.equals(createdAt, user.createdAt)
-                && Objects.equals(updatedAt, user.updatedAt);
-    }
+    @OneToMany(mappedBy = "purchaser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Ticket> purchasedTickets = new HashSet<>();
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, email, createdAt, updatedAt);
-    }
+    @ManyToMany(mappedBy = "staff", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Event> staffedEvents = new HashSet<>();
 }

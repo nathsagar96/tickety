@@ -1,13 +1,17 @@
 package com.tickety.dtos.responses;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record TicketTypeResponse(
         UUID id,
         String name,
         String description,
-        Double price,
+        BigDecimal price,
         Integer totalAvailable,
-        Instant createdAt,
-        Instant updatedAt) {}
+        Integer availableCount,
+        UUID eventId,
+        String eventName,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {}

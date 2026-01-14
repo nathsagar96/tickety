@@ -1,10 +1,9 @@
 package com.tickety.dtos.responses;
 
-import com.tickety.enums.EventStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record EventResponse(
+public record PublishedEventResponse(
         UUID id,
         String name,
         String description,
@@ -13,8 +12,4 @@ public record EventResponse(
         LocalDateTime endTime,
         LocalDateTime salesStart,
         LocalDateTime salesEnd,
-        EventStatus status,
-        UUID organizerId,
-        String organizerName,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt) {}
+        String organizerName) {}

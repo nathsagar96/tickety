@@ -3,5 +3,7 @@ package com.tickety.enums;
 public enum TicketValidationStatus {
     VALID,
     INVALID,
-    EXPIRED
+    ALREADY_USED,
+    EXPIRED,
+    CANCELLED
 }

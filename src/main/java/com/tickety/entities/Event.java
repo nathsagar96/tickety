@@ -2,77 +2,83 @@ package com.tickety.entities;
 
 import com.tickety.enums.EventStatus;
 import jakarta.persistence.*;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
+@Entity
+@Table(
+        name = "events",
+        indexes = {
+            @Index(name = "idx_event_status", columnList = "status"),
+            @Index(name = "idx_event_start_time", columnList = "start_time"),
+            @Index(name = "idx_event_organizer", columnList = "organizer_id")
+        })
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "events")
+@Builder
 public class Event extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "event_start")
-    private Instant start;
-
-    @Column(name = "event_end")
-    private Instant end;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
     @Column(name = "venue", nullable = false)
     private String venue;
 
-    @Column(name = "sales_start")
-    private Instant salesStart;
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
 
-    @Column(name = "sales_end")
-    private Instant salesEnd;
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "sales_start", nullable = false)
+    private LocalDateTime salesStart;
+
+    @Column(name = "sales_end", nullable = false)
+    private LocalDateTime salesEnd;
+
     @Enumerated(EnumType.STRING)
-    private EventStatus status;
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private EventStatus status = EventStatus.DRAFT;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organizer_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @ManyToMany(mappedBy = "attendingEvents")
-    private List<User> attendees = new ArrayList<>();
+    private Set<TicketType> ticketTypes = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "event_staff",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
-    @ManyToMany(mappedBy = "staffingEvents")
-    private List<User> staff = new ArrayList<>();
+    private Set<User> staff = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "event_attendees",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TicketType> ticketTypes = new ArrayList<>();
+    private Set<User> attendees = new HashSet<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Event event = (Event) o;
-        return Objects.equals(id, event.id)
-                && Objects.equals(name, event.name)
-                && Objects.equals(start, event.start)
-                && Objects.equals(end, event.end)
-                && Objects.equals(venue, event.venue)
-                && Objects.equals(salesStart, event.salesStart)
-                && Objects.equals(salesEnd, event.salesEnd)
-                && status == event.status
-                && Objects.equals(createdAt, event.createdAt)
-                && Objects.equals(updatedAt, event.updatedAt);
+    public void addTicketType(TicketType ticketType) {
+        ticketTypes.add(ticketType);
+        ticketType.setEvent(this);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, start, end, venue, salesStart, salesEnd, status, createdAt, updatedAt);
+    public void removeTicketType(TicketType ticketType) {
+        ticketTypes.remove(ticketType);
+        ticketType.setEvent(null);
     }
 }
