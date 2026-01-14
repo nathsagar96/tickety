@@ -1,55 +1,65 @@
 package com.tickety.entities;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
+@Entity
+@Table(
+        name = "ticket_types",
+        indexes = {@Index(name = "idx_ticket_type_event", columnList = "event_id")})
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "ticket_types")
+@Builder
 public class TicketType extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "price", nullable = false)
-    private Double price;
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
-    @Column(name = "total_available")
+    @Column(name = "total_available", nullable = false)
     private Integer totalAvailable;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @Column(name = "available_count", nullable = false)
+    private Integer availableCount;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    @OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    @OneToMany(mappedBy = "ticketType", cascade = CascadeType.ALL)
-    private List<Ticket> tickets = new ArrayList<>();
+    private Set<Ticket> tickets = new HashSet<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        TicketType that = (TicketType) o;
-        return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(description, that.description)
-                && Objects.equals(price, that.price)
-                && Objects.equals(totalAvailable, that.totalAvailable)
-                && Objects.equals(createdAt, that.createdAt)
-                && Objects.equals(updatedAt, that.updatedAt);
+    @PrePersist
+    public void prePersist() {
+        if (availableCount == null) {
+            availableCount = totalAvailable;
+        }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, price, totalAvailable, createdAt, updatedAt);
+    public boolean hasAvailableTickets() {
+        return availableCount != null && availableCount > 0;
+    }
+
+    public void decrementAvailableCount() {
+        if (availableCount > 0) {
+            availableCount--;
+        }
+    }
+
+    public void incrementAvailableCount() {
+        if (availableCount < totalAvailable) {
+            availableCount++;
+        }
     }
 }

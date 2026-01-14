@@ -1,44 +1,50 @@
 package com.tickety.entities;
 
-import com.tickety.enums.TicketValidationMethod;
 import com.tickety.enums.TicketValidationStatus;
+import com.tickety.enums.ValidationMethod;
 import jakarta.persistence.*;
-import java.util.Objects;
+import java.time.LocalDateTime;
 import lombok.*;
 
+@Entity
+@Table(
+        name = "ticket_validations",
+        indexes = {
+            @Index(name = "idx_validation_ticket", columnList = "ticket_id"),
+            @Index(name = "idx_validation_time", columnList = "validated_at")
+        })
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "ticket_validations")
+@Builder
 public class TicketValidation extends BaseEntity {
 
-    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private TicketValidationStatus status;
 
-    @Column(name = "validation_method", nullable = false)
     @Enumerated(EnumType.STRING)
-    private TicketValidationMethod validationMethod;
+    @Column(name = "validation_method", nullable = false)
+    private ValidationMethod validationMethod;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_id")
+    @Column(name = "validated_at", nullable = false)
+    private LocalDateTime validatedAt;
+
+    @Column(name = "validated_by")
+    private String validatedBy;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        TicketValidation that = (TicketValidation) o;
-        return Objects.equals(id, that.id)
-                && status == that.status
-                && Objects.equals(createdAt, that.createdAt)
-                && Objects.equals(updatedAt, that.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, status, createdAt, updatedAt);
+    @PrePersist
+    public void prePersist() {
+        if (validatedAt == null) {
+            validatedAt = LocalDateTime.now();
+        }
     }
 }

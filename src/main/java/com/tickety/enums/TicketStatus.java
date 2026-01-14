@@ -1,6 +1,9 @@
 package com.tickety.enums;
 
 public enum TicketStatus {
+    RESERVED,
     PURCHASED,
-    CANCELLED
+    CANCELLED,
+    REFUNDED,
+    USED
 }

@@ -1,31 +1,56 @@
 package com.tickety.entities;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
+import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     protected UUID id;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    protected Instant createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    protected LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    protected Instant updatedAt;
+    protected LocalDateTime updatedAt;
+
+    @CreatedBy
+    @Column(name = "created_by", updatable = false)
+    protected String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by")
+    protected String updatedBy;
+
+    @Version
+    @Column(name = "version")
+    protected Long version;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseEntity that = (BaseEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
