@@ -98,13 +98,6 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public Page<EventListResponse> getStaffEvents(Pageable pageable) {
-        UUID userId = userService.getCurrentUserId();
-        Page<Event> events = eventRepository.findEventsByStaffUser(userId, pageable);
-        return events.map(eventMapper::toListResponse);
-    }
-
-    @Transactional(readOnly = true)
     public Event findById(UUID eventId) {
         return eventRepository.findById(eventId).orElseThrow(() -> ResourceNotFoundException.event(eventId.toString()));
     }

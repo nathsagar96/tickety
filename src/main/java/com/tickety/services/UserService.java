@@ -38,21 +38,4 @@ public class UserService {
 
         throw new IllegalStateException("Invalid authentication principal");
     }
-
-    @Transactional(readOnly = true)
-    public UUID getCurrentUserId() {
-        return getCurrentUser().getId();
-    }
-
-    @Transactional(readOnly = true)
-    public User findById(UUID id) {
-        return userRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.user(id.toString()));
-    }
-
-    @Transactional(readOnly = true)
-    public User findByKeycloakId(UUID keycloakId) {
-        return userRepository
-                .findByKeycloakId(keycloakId)
-                .orElseThrow(() -> ResourceNotFoundException.user(keycloakId.toString()));
-    }
 }

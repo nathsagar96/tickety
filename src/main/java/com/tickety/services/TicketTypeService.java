@@ -90,13 +90,6 @@ public class TicketTypeService {
         log.info("Deleted ticket type {}", ticketTypeId);
     }
 
-    @Transactional(readOnly = true)
-    public TicketType findById(UUID ticketTypeId) {
-        return ticketTypeRepository
-                .findById(ticketTypeId)
-                .orElseThrow(() -> ResourceNotFoundException.ticketType(ticketTypeId.toString()));
-    }
-
     @Transactional
     public TicketType findByIdWithLock(UUID ticketTypeId) {
         return ticketTypeRepository

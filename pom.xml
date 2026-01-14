@@ -12,7 +12,7 @@
 
     <groupId>com.tickety</groupId>
     <artifactId>tickety</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>tickety</name>
     <description>Event Ticket Platform</description>
 
