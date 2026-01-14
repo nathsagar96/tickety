@@ -33,6 +33,10 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info")
                         .permitAll()
+                        
+                        // Swagger UI endpoints
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+                        .permitAll()
 
                         // Organizer endpoints
                         .requestMatchers("/api/v1/events/**")

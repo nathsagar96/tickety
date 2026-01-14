@@ -27,7 +27,7 @@ public class QrCode extends BaseEntity {
     private QrCodeStatus status = QrCodeStatus.ACTIVE;
 
     @Lob
-    @Column(name = "image_data", columnDefinition = "BYTEA")
+    @Column(name = "image_data")
     private byte[] imageData;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
