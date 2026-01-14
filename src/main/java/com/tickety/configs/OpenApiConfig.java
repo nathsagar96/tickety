@@ -22,10 +22,7 @@ import org.springframework.context.annotation.Configuration;
                                         name = "Tickety Support",
                                         email = "support@tickety.com",
                                         url = "https://tickety.com/support"),
-                        license =
-                                @License(
-                                        name = "MIT License",
-                                        url = "https://opensource.org/licenses/MIT")),
+                        license = @License(name = "MIT License", url = "https://opensource.org/licenses/MIT")),
         servers = {
             @Server(url = "http://localhost:8080", description = "Local Development"),
             @Server(url = "https://api.tickety.com", description = "Production"),
