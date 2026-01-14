@@ -35,9 +35,6 @@ server:
     include-exception: false
 
 app:
-  security:
-    jwt:
-      role-claim-name: realm_access.roles
   qr:
     image-format: PNG
     image-size: 300

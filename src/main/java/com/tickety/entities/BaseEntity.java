@@ -19,27 +19,27 @@ public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    protected UUID id;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 
     @CreatedBy
     @Column(name = "created_by", updatable = false)
-    private String createdBy;
+    protected String createdBy;
 
     @LastModifiedBy
     @Column(name = "updated_by")
-    private String updatedBy;
+    protected String updatedBy;
 
     @Version
     @Column(name = "version")
-    private Long version;
+    protected Long version;
 
     @Override
     public boolean equals(Object o) {
